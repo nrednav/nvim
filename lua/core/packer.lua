@@ -24,6 +24,7 @@ return require('packer').startup(function(use)
     requires = { {'nvim-lua/plenary.nvim'} }
   }
   use 'Shougo/defx.nvim'
+  use 'theprimeagen/harpoon'
 
   -- Dev
   use {

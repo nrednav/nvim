@@ -13,7 +13,6 @@ o.incsearch = true
 o.ignorecase = true
 o.smartcase = true
 
-
 -- Editor
 o.relativenumber = true
 o.number = true
