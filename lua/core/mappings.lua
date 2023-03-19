@@ -1,8 +1,5 @@
 local map = vim.keymap.set
 
--- Netrw Explorer
-map("n", "<leader>fe", vim.cmd.Ex)
-
 -- Use semi-colon for quicker saving ';'
 map({ "n", "v" }, ";", ":", { noremap = true })
 

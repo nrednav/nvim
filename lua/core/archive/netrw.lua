@@ -1,0 +1,25 @@
+-- Netrw Explorer
+
+-- map("n", "<leader>fe", vim.cmd.Ex)
+
+-- vim.api.nvim_create_autocmd('filetype', {
+--   pattern = "netrw",
+--   desc = "Custom mappings for netrw",
+--   callback = function()
+--     local bind = function(lhs, rhs)
+--       vim.keymap.set('n', lhs, rhs, { remap = true, buffer = true })
+--     end
+--
+--     -- Create new file
+--     bind('n', '%')
+--
+--     -- Rename file
+--     bind('r', 'R')
+--
+--     -- Go up one directory
+--     bind('h', '-')
+--
+--     -- Open in new tab
+--     bind('<C-t>', 't')
+--   end
+-- })
