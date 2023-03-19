@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
 -- Netrw Explorer
-map("n", "<leader>pv", vim.cmd.Ex)
+map("n", "<leader>fe", vim.cmd.Ex)
 
 -- Use semi-colon for quicker saving ';'
 map({ "n", "v" }, ";", ":", { noremap = true })
@@ -25,3 +25,6 @@ map("n", "<C-u>", "<C-u>zz")
 -- Keep cursor centered while navigating through search terms
 map("n", "n", "nzzzv")
 map("n", "N", "Nzzzv")
+
+-- Change to directory of currently open file
+map("n", "<leader>cd", ":cd %:p:h<CR>:pwd<CR>", { noremap = true })

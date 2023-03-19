@@ -17,6 +17,18 @@ return require('packer').startup(function(use)
     requires = { 'nvim-tree/nvim-web-devicons', opt = true }
   }
   use 'norcalli/nvim-colorizer.lua'
+  use 'mbbill/undotree'
+  use {
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup()
+    end
+  }
+  use {
+    "windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup {} end
+  }
+  use 'tpope/vim-surround'
 
   -- Search
   use {
@@ -53,20 +65,8 @@ return require('packer').startup(function(use)
     }
   }
 
-  -- Dev
-  use {
-    "folke/trouble.nvim",
-    requires = "nvim-tree/nvim-web-devicons",
-    config = function()
-      require("trouble").setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      }
-    end
-  }
-
   -- Syntax
   use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })
+  use 'jose-elias-alvarez/null-ls.nvim'
 
 end)

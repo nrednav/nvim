@@ -6,7 +6,8 @@ lsp.ensure_installed({
   "tsserver",
   "rust_analyzer",
   "eslint",
-  "lua_ls"
+  "lua_ls",
+  "emmet_ls"
 })
 
 -- Server Configs
