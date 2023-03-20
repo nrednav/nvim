@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 
-map("n", "<leader>fe", ":<C-u>Defx -listed -resume -columns=mark:indent:icon:filename:type:size:time -buffer-name=tab`tabpagenr()` `expand('%:p:h')` -search=`expand('%:p')`<CR>")
+map("n", "<leader>fe", ":<C-u>Defx -listed -resume -columns=mark:indent:icon:filename:type:size:time -buffer-name=tab`tabpagenr()` `expand('%:p:h')` -search=`expand('%:p')`<CR>", { silent = true })
 
 vim.api.nvim_create_autocmd('filetype', {
   pattern = "defx",
