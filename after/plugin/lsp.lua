@@ -7,7 +7,8 @@ lsp.ensure_installed({
   "rust_analyzer",
   "eslint",
   "lua_ls",
-  "emmet_ls"
+  "emmet_ls",
+  "clangd"
 })
 
 -- Server Configs
