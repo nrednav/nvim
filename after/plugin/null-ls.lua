@@ -13,6 +13,7 @@ null_ls.setup({
     formatting.prettierd,
     formatting.rustfmt,
     formatting.gofmt,
+    formatting.clang_format,
   },
   on_attach = function (client, bufnr)
     if client.supports_method("textDocument/formatting") then
