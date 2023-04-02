@@ -2,9 +2,8 @@
 vim.g.mapleader = ","
 
 -- Set path to python binary
-
--- Unix
-vim.g.python3_host_prog='/usr/bin/python'
-
--- Mac
--- vim.g.python3_host_prog='/opt/homebrew/bin/python3'
+if vim.fn.has("macunix") then
+  vim.g.python3_host_prog='/opt/homebrew/bin/python3'
+else
+  vim.g.python3_host_prog='/usr/bin/python'
+end
