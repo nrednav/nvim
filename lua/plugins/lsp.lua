@@ -4,6 +4,9 @@ return {
     'VonHeikemen/lsp-zero.nvim',
     branch = 'v2.x',
     lazy = true,
+    config = function()
+      require("lsp-zero.settings").preset({})
+    end
   },
 
   -- LSP
@@ -21,41 +24,33 @@ return {
         end,
       },
     },
-    config = function()
-      local lsp = require('lsp-zero')
-
-      lsp.ensure_installed({
-        "tsserver",
-        "eslint",
-        "lua_ls",
-        "emmet_ls",
-        "clangd"
-      })
-
-      -- tsserver
-      lsp.configure("tsserver", {
-        filetypes = {
-          "javascript",
-          "javascriptreact",
-          "javascript.jsx",
-          "typescript",
-          "typescriptreact",
-          "typescript.tsx",
+    opts = {
+      servers = {
+        lua_ls = {
+          settings = {
+            Lua = {
+              diagnostics = {
+                globals = { 'vim' }
+              }
+            }
+          }
         },
-      })
-
-      -- Preferences
-      lsp.set_preferences({
-        suggest_lsp_servers = false,
-        sign_icons = {
-          error = 'E',
-          warn = 'W',
-          hint = 'H',
-          info = 'I'
+        tsserver = {
+          filetypes = {
+            "javascript",
+            "javascriptreact",
+            "javascript.jsx",
+            "typescript",
+            "typescriptreact",
+            "typescript.tsx",
+          },
         }
-      })
+      }
+    },
+    config = function(_, opts)
+      local lsp = require("lsp-zero")
+      local lspconfig = require("lspconfig")
 
-      -- Mappings
       lsp.on_attach(function(_, bufnr)
         local opts = { buffer = bufnr, remap = false }
         local map = vim.keymap.set
@@ -69,9 +64,31 @@ return {
         map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, opts)
       end)
 
-      vim.diagnostic.config({
-        virtual_text = true
+      lsp.ensure_installed({
+        "tsserver",
+        "eslint",
+        "lua_ls",
+        "emmet_ls",
+        "clangd"
       })
+
+      for server, server_opts in pairs(opts.servers) do
+        if server_opts then
+          server_opts = server_opts == true and {} or server_opts
+          lspconfig[server].setup(server_opts)
+        end
+      end
+
+      lsp.set_sign_icons({
+        error = 'E',
+        warn = 'W',
+        hint = 'H',
+        info = 'I'
+      })
+
+      lsp.setup()
+
+      vim.diagnostic.config({ virtual_text = true })
     end
   }
 }
