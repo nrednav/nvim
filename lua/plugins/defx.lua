@@ -1,6 +1,6 @@
 return {
   'Shougo/defx.nvim',
-  lazy = false,
+  event = "VeryLazy",
   init = function()
     local map = vim.keymap.set
 
