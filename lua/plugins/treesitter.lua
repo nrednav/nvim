@@ -22,7 +22,6 @@ return {
         "query",
         "dockerfile",
         "terraform",
-        "yaml",
       },
 
       -- Automatically install missing parsers when entering buffer
