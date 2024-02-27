@@ -1,6 +1,7 @@
 return {
   'Shougo/defx.nvim',
   event = "VeryLazy",
+  build = ":UpdateRemotePlugins",
   init = function()
     local map = vim.keymap.set
 
