@@ -1,94 +1,187 @@
 return {
-  -- LSP Zero
-  {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v2.x',
-    lazy = true,
-    config = function()
-      require("lsp-zero.settings").preset({})
-    end
-  },
+	{
+		"neovim/nvim-lspconfig",
+		dependencies = {
+			{ "folke/lazydev.nvim", ft = "lua" },
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
+			{ "j-hui/fidget.nvim", opts = {} },
+			{ "https://git.sr.ht/~whynothugo/lsp_lines.nvim" },
+			"stevearc/conform.nvim",
+			"b0o/SchemaStore.nvim",
+		},
+		config = function()
+			local capabilities = nil
 
-  -- LSP
-  {
-    'neovim/nvim-lspconfig',
-    cmd = 'LspInfo',
-    event = {'BufReadPre', 'BufNewFile'},
-    dependencies = {
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'williamboman/mason-lspconfig.nvim'},
-      {
-        'williamboman/mason.nvim',
-        build = function()
-          pcall(vim.api.nvim_command, 'MasonUpdate')
-        end,
-      },
-    },
-    opts = {
-      servers = {
-        lua_ls = {
-          settings = {
-            Lua = {
-              diagnostics = {
-                globals = { 'vim' }
-              }
-            }
-          }
-        },
-        tsserver = {
-          filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-          },
-        }
-      }
-    },
-    config = function(_, opts)
-      local lsp = require("lsp-zero")
-      local lspconfig = require("lspconfig")
+			if pcall(require, "cmp_nvim_lsp") then
+				capabilities = require("cmp_nvim_lsp").default_capabilities()
+			end
 
-      lsp.on_attach(function(_, bufnr)
-        local opts = { buffer = bufnr, remap = false }
-        local map = vim.keymap.set
+			local lspconfig = require("lspconfig")
 
-        map("n", "gd", function() vim.lsp.buf.definition() end, opts)
-        map("n", "gr", function() vim.lsp.buf.references() end, opts)
-        map("n", "K", function() vim.lsp.buf.hover() end, opts)
-        map("n", "<leader>d", function() vim.diagnostic.open_float() end, opts)
-        map("n", "[g", function() vim.diagnostic.goto_prev() end, opts)
-        map("n", "]g", function() vim.diagnostic.goto_next() end, opts)
-        map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, opts)
-      end)
+			local servers = {
+				bashls = true,
+				lua_ls = {
+					settings = {
+						Lua = {
+							runtime = {
+								version = "LuaJIT",
+							},
+							diagnostics = {
+								globals = { "vim" },
+							},
+							telemetry = {
+								enable = false,
+							},
+						},
+					},
+					server_capabilities = {
+						semanticTokensProvider = vim.NIL,
+					},
+				},
+				biome = true,
+				ts_ls = {
+					root_dir = require("lspconfig").util.root_pattern("package.json"),
+					single_file = false,
+					server_capabilities = {
+						documentFormattingProvider = false,
+					},
+				},
+				jsonls = {
+					server_capabilities = {
+						documentFormattingProvider = false,
+					},
+					settings = {
+						json = {
+							schemas = require("schemastore").json.schemas(),
+							validate = { enable = true },
+						},
+					},
+				},
+				yamlls = {
+					settings = {
+						yaml = {
+							schemaStore = {
+								enable = false,
+								url = "",
+							},
+						},
+					},
+				},
+				lexical = {
+					cmd = { "~/dev/sources/lexical", "server" },
+					root_dir = function(filename)
+						return util.root_pattern("mix.exs", ".git")(fname) or vim.loop.cwd()
+					end,
+					filetypes = { "elixir", "eelixir", "heex" },
+					server_capabilities = {
+						completionProvider = vim.NIL,
+						definitionProvider = true,
+					},
+				},
+				clangd = {
+					init_options = { clangdFileStatus = true },
+					filetypes = { "c, cpp" },
+				},
+			}
 
-      lsp.ensure_installed({
-        "tsserver",
-        "eslint",
-        "lua_ls",
-        "emmet_ls",
-        "clangd"
-      })
+			local servers_to_install = vim.tbl_filter(function(key)
+				local t = servers[key]
+				if type(t) == "table" then
+					return not t.manual_install
+				else
+					return t
+				end
+			end, vim.tbl_keys(servers))
 
-      for server, server_opts in pairs(opts.servers) do
-        if server_opts then
-          server_opts = server_opts == true and {} or server_opts
-          lspconfig[server].setup(server_opts)
-        end
-      end
+			require("mason").setup()
 
-      lsp.set_sign_icons({
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-      })
+			local ensure_installed = {
+				"stylua",
+				"lua_ls",
+			}
 
-      lsp.setup()
+			vim.list_extend(ensure_installed, servers_to_install)
 
-      vim.diagnostic.config({ virtual_text = true })
-    end
-  }
+			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+
+			for name, config in pairs(servers) do
+				if config == true then
+					config = {}
+				end
+
+				config = vim.tbl_deep_extend("force", {}, {
+					capabilities = capabilities,
+				}, config)
+
+				lspconfig[name].setup(config)
+			end
+
+			local disable_semantic_tokens = {
+				lua = true,
+			}
+
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local bufnr = args.buf
+					local client = assert(vim.lsp.get_client_by_id(args.data.client_id), "must have a valid client")
+
+					local settings = servers[client.name]
+					if type(settings) ~= "table" then
+						settings = {}
+					end
+
+					local builtin = require("telescope.builtin")
+
+					vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
+					vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = 0 })
+					vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = 0 })
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0 })
+					vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0 })
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0 })
+
+					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0 })
+					vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = 0 })
+					vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, { buffer = 0 })
+
+					vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { buffer = 0 })
+					vim.keymap.set("n", "[g", vim.diagnostic.goto_prev, { buffer = 0 })
+					vim.keymap.set("n", "]g", vim.diagnostic.goto_next, { buffer = 0 })
+
+					local filetype = vim.bo[bufnr].filetype
+					if disable_semantic_tokens[filetype] then
+						client.server_capabilities.semanticTokensProvider = nil
+					end
+
+					-- Override server capabilities
+					if settings.server_capabilities then
+						for k, v in pairs(settings.server_capabilities) do
+							if v == vim.NIL then
+								---@diagnostic disable-next-line: cast-local-type
+								v = nil
+							end
+
+							client.server_capabilities[k] = v
+						end
+					end
+				end,
+			})
+
+			require("plugins.custom.autoformat").setup()
+
+			require("lsp_lines").setup()
+
+			vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
+
+			vim.keymap.set("", "<leader>dl", function()
+				local config = vim.diagnostic.config() or {}
+				if config.virtual_text then
+					vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
+				else
+					vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
+				end
+			end, { desc = "Toggle lsp_lines" })
+		end,
+	},
 }

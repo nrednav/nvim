@@ -4,15 +4,12 @@ M.setup = function()
 	local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
 
 	require("nvim-treesitter").setup({
-		ensure_install = {
-			"core",
-			"stable",
-			"elixir",
-		},
+		ensure_install = { "core", "stable" },
 	})
 
 	local syntax_on = {
 		elixir = true,
+		markdown = true,
 	}
 
 	vim.api.nvim_create_autocmd("FileType", {
