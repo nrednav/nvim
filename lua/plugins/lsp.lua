@@ -69,17 +69,20 @@ return {
 						},
 					},
 				},
-				lexical = {
-					cmd = { "~/dev/sources/lexical", "server" },
-					root_dir = function(filename)
-						return util.root_pattern("mix.exs", ".git")(fname) or vim.loop.cwd()
-					end,
-					filetypes = { "elixir", "eelixir", "heex" },
-					server_capabilities = {
-						completionProvider = vim.NIL,
-						definitionProvider = true,
-					},
-				},
+				-- lexical = {
+				-- 	cmd = { "/Users/vandern/dev/sources/lexical/_build/dev/package/lexical/bin/start_lexical.sh" },
+				-- 	on_attach = function()
+				-- 		print("Lexical has started.")
+				-- 	end,
+				-- 	root_dir = function(filename)
+				-- 		return lspconfig.util.root_pattern("mix.exs", ".git")(filename) or vim.loop.cwd()
+				-- 	end,
+				-- 	filetypes = { "elixir", "eelixir", "heex" },
+				-- 	server_capabilities = {
+				-- 		completionProvider = vim.NIL,
+				-- 		definitionProvider = true,
+				-- 	},
+				-- },
 				clangd = {
 					init_options = { clangdFileStatus = true },
 					filetypes = { "c, cpp" },
