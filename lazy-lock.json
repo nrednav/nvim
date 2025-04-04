@@ -23,7 +23,6 @@
   "mason.nvim": { "branch": "main", "commit": "fc98833b6da5de5a9c5b1446ac541577059555be" },
   "nvim-autopairs": { "branch": "master", "commit": "84a81a7d1f28b381b32acf1e8fe5ff5bef4f7968" },
   "nvim-cmp": { "branch": "main", "commit": "059e89495b3ec09395262f16b1ad441a38081d04" },
-  "nvim-colorizer.lua": { "branch": "master", "commit": "a065833f35a3a7cc3ef137ac88b5381da2ba302e" },
   "nvim-lspconfig": { "branch": "master", "commit": "40f120c10ea4b87311175539a183c3b75eab95a3" },
   "nvim-treesitter": { "branch": "main", "commit": "54b64bc294ff629580136d888168caf59ef25539" },
   "nvim-web-devicons": { "branch": "master", "commit": "4c3a5848ee0b09ecdea73adcd2a689190aeb728c" },
@@ -34,7 +33,5 @@
   "telescope-smart-history.nvim": { "branch": "master", "commit": "81a4cceaa54d65d5f7c7c26178ee63b634d3e26d" },
   "telescope-undo.nvim": { "branch": "main", "commit": "928d0c2dc9606e01e2cc547196f48d2eaecf58e5" },
   "telescope.nvim": { "branch": "master", "commit": "a4ed82509cecc56df1c7138920a1aeaf246c0ac5" },
-  "vim-astro": { "branch": "main", "commit": "9b4674ecfe1dd84b5fb9b4de1653975de6e8e2e1" },
-  "vim-fugitive": { "branch": "master", "commit": "4a745ea72fa93bb15dd077109afbb3d1809383f2" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" }
 }
