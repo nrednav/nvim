@@ -20,6 +20,14 @@ return {
 
 		vim.keymap.set("n", "<leader>ff", apply_theme(builtin.find_files))
 		vim.keymap.set("n", "<leader>fh", apply_theme(builtin.help_tags))
+		vim.keymap.set(
+			"n",
+			"<leader>fn",
+			apply_theme(builtin.find_files, {
+				cwd = "~/docs/blue",
+				prompt_title = "<- NOTES ->",
+			})
+		)
 		vim.keymap.set("n", "<leader>lg", apply_theme(require("plugins.custom.telescope.multi-ripgrep")))
 		vim.keymap.set("n", "<leader>fb", apply_theme(builtin.current_buffer_fuzzy_find))
 		vim.keymap.set(
