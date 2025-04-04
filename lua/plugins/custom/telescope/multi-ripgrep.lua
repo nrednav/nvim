@@ -1,12 +1,11 @@
+-- Source: https://github.com/tjdevries/config.nvim/blob/master/lua/custom/telescope/multi-ripgrep.lua
+
 local conf = require("telescope.config").values
 local finders = require("telescope.finders")
 local make_entry = require("telescope.make_entry")
 local pickers = require("telescope.pickers")
 
 local flatten = vim.tbl_flatten
-
--- i would like to be able to do telescope
--- and have telescope do some filtering on files and some grepping
 
 return function(opts)
 	opts = opts or {}

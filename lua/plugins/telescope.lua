@@ -11,23 +11,55 @@ return {
 	init = function()
 		local builtin = require("telescope.builtin")
 
-		vim.keymap.set("n", "<leader>ff", builtin.find_files)
-		vim.keymap.set("n", "<leader>fh", builtin.help_tags)
-		vim.keymap.set("n", "<leader>lg", require("plugins.custom.telescope.multi-ripgrep"))
-		vim.keymap.set("n", "<leader>fb", builtin.buffers)
-		vim.keymap.set("n", "<leader>/", builtin.current_buffer_fuzzy_find)
-		vim.keymap.set("n", "<leader>fg", function()
-			return builtin.git_files({ cwd = vim.fn.expand("%:h") })
-		end)
-		vim.keymap.set("n", "<leader>vc", function()
-			builtin.find_files({
+		local function apply_theme(command, opts)
+			local themes = require("telescope.themes")
+			return function()
+				command(themes.get_ivy(opts))
+			end
+		end
+
+		vim.keymap.set("n", "<leader>ff", apply_theme(builtin.find_files))
+		vim.keymap.set("n", "<leader>fh", apply_theme(builtin.help_tags))
+		vim.keymap.set("n", "<leader>lg", apply_theme(require("plugins.custom.telescope.multi-ripgrep")))
+		vim.keymap.set("n", "<leader>fb", apply_theme(builtin.current_buffer_fuzzy_find))
+		vim.keymap.set(
+			"n",
+			"<leader>fp",
+			apply_theme(builtin.find_files, {
+				cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy"),
+			})
+		)
+		vim.keymap.set("n", "<leader>fg", apply_theme(builtin.git_files, { cwd = vim.fn.expand("%:h") }))
+		vim.keymap.set(
+			"n",
+			"<leader>vc",
+			apply_theme(builtin.find_files, {
 				path_display = { "shorten" },
 				cwd = "~/.config/nvim",
 				prompt_title = "<- NVIMRC ->",
 			})
-		end)
+		)
 	end,
 	config = function()
-		require("plugins.custom.telescope")
+		local data = assert(vim.fn.stdpath("data"))
+
+		require("telescope").setup({
+			extensions = {
+				wrap_results = true,
+				fzf = {
+					fuzzy = true,
+					override_generic_sorter = true,
+					override_file_sorter = true,
+					case_mode = "smart_case",
+				},
+				history = {
+					path = vim.fs.joinpath(data, "telescope_history.sqlite3"),
+					limit = 100,
+				},
+			},
+		})
+
+		require("telescope").load_extension("fzf")
+		require("telescope").load_extension("smart_history")
 	end,
 }
