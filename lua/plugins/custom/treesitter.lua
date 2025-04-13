@@ -8,8 +8,12 @@ M.setup = function()
 	})
 
 	local syntax_on = {
+		json = true,
+		cpp = true,
 		elixir = true,
 		markdown = true,
+		javascript = true,
+		typescript = true,
 	}
 
 	vim.api.nvim_create_autocmd("FileType", {
