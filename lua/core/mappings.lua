@@ -26,6 +26,10 @@ map("n", "N", "Nzzzv")
 -- Change to directory of currently open file
 map("n", "<leader>cd", ":cd %:p:h<CR>:pwd<CR>", { noremap = true })
 
+-- Execute line, file
+map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
+map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
+
 -- Insert DateTime header
 local function get_day_with_ordinal(day)
 	if day > 3 and day < 21 then

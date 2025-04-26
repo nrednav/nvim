@@ -37,7 +37,7 @@ return {
 				cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy"),
 			})
 		)
-		vim.keymap.set("n", "<leader>fg", apply_theme(builtin.git_files, { cwd = vim.fn.expand("%:h") }))
+		vim.keymap.set("n", "<leader>fg", apply_theme(builtin.git_files))
 		vim.keymap.set(
 			"n",
 			"<leader>vc",
