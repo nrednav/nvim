@@ -15,6 +15,7 @@ return {
 					find_notes = "<leader>nf",
 					create_note_from_template = "<leader>nt",
 					create_cwd_note_from_template = "<leader>nT",
+					insert_template = "<leader>ni",
 				},
 			})
 		end,
