@@ -17,6 +17,7 @@ return {
 					create_cwd_note_from_template = "<leader>nT",
 					insert_template = "<leader>ni",
 				},
+				telescope_theme = "ivy",
 			})
 		end,
 	},
