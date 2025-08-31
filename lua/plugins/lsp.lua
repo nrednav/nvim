@@ -18,10 +18,41 @@ return {
 				capabilities = require("cmp_nvim_lsp").default_capabilities()
 			end
 
-			local lspconfig = require("lspconfig")
+			local on_attach = function(client, bufnr)
+				local builtin = require("telescope.builtin")
+				local opts = { buffer = bufnr, noremap = true, silent = true }
+
+				vim.keymap.set("n", "gd", builtin.lsp_definitions, opts)
+				vim.keymap.set("n", "gr", builtin.lsp_references, opts)
+				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+				vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, opts)
+
+				vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+				vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
+				vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, opts)
+
+				vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
+				vim.keymap.set("n", "[g", vim.diagnostic.goto_prev, opts)
+				vim.keymap.set("n", "]g", vim.diagnostic.goto_next, opts)
+			end
+
+			require("mason").setup()
+
+			local ensure_installed = {
+				"bashls",
+				"biome",
+				"clangd",
+				"jsonls",
+				"lua_ls",
+				"ts_ls",
+				"yamlls",
+			}
+
+			require("mason-lspconfig").setup({
+				ensure_installed = ensure_installed,
+			})
 
 			local servers = {
-				bashls = true,
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -36,26 +67,33 @@ return {
 							},
 						},
 					},
-					server_capabilities = {
-						semanticTokensProvider = vim.NIL,
+					capabilities = {
+						textDocument = {
+							semanticTokens = false,
+						},
 					},
 				},
-				biome = true,
 				ts_ls = {
 					root_dir = require("lspconfig").util.root_pattern("package.json"),
 					single_file = false,
-					server_capabilities = {
-						documentFormattingProvider = false,
+					capabilities = {
+						textDocument = {
+							formatting = false,
+							rangeFormatting = false,
+						},
 					},
 				},
 				jsonls = {
-					server_capabilities = {
-						documentFormattingProvider = false,
-					},
 					settings = {
 						json = {
 							schemas = require("schemastore").json.schemas(),
 							validate = { enable = true },
+						},
+					},
+					capabilities = {
+						textDocument = {
+							formatting = false,
+							rangeFormatting = false,
 						},
 					},
 				},
@@ -69,107 +107,22 @@ return {
 						},
 					},
 				},
-				-- lexical = {
-				-- 	cmd = { "/Users/vandern/dev/sources/lexical/_build/dev/package/lexical/bin/start_lexical.sh" },
-				-- 	on_attach = function()
-				-- 		print("Lexical has started.")
-				-- 	end,
-				-- 	root_dir = function(filename)
-				-- 		return lspconfig.util.root_pattern("mix.exs", ".git")(filename) or vim.loop.cwd()
-				-- 	end,
-				-- 	filetypes = { "elixir", "eelixir", "heex" },
-				-- 	server_capabilities = {
-				-- 		completionProvider = vim.NIL,
-				-- 		definitionProvider = true,
-				-- 	},
-				-- },
 				clangd = {
 					init_options = { clangdFileStatus = true },
-					filetypes = { "c, cpp" },
+					filetypes = { "c", "cpp" },
 				},
 			}
 
-			local servers_to_install = vim.tbl_filter(function(key)
-				local t = servers[key]
-				if type(t) == "table" then
-					return not t.manual_install
-				else
-					return t
-				end
-			end, vim.tbl_keys(servers))
+			for _, server_name in ipairs(ensure_installed) do
+				local server_config = servers[server_name] or {}
 
-			require("mason").setup()
-
-			local ensure_installed = {
-				"stylua",
-				"lua_ls",
-			}
-
-			vim.list_extend(ensure_installed, servers_to_install)
-
-			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
-
-			for name, config in pairs(servers) do
-				if config == true then
-					config = {}
-				end
-
-				config = vim.tbl_deep_extend("force", {}, {
+				vim.lsp.config[server_name] = vim.tbl_deep_extend("force", {
 					capabilities = capabilities,
-				}, config)
-
-				lspconfig[name].setup(config)
+					on_attach = on_attach,
+				}, server_config)
 			end
 
-			local disable_semantic_tokens = {
-				lua = true,
-			}
-
-			vim.api.nvim_create_autocmd("LspAttach", {
-				callback = function(args)
-					local bufnr = args.buf
-					local client = assert(vim.lsp.get_client_by_id(args.data.client_id), "must have a valid client")
-
-					local settings = servers[client.name]
-					if type(settings) ~= "table" then
-						settings = {}
-					end
-
-					local builtin = require("telescope.builtin")
-
-					vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
-					vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = 0 })
-					vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = 0 })
-					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0 })
-					vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0 })
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0 })
-
-					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0 })
-					vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = 0 })
-					vim.keymap.set("n", "<leader>wd", builtin.lsp_document_symbols, { buffer = 0 })
-
-					vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { buffer = 0 })
-					vim.keymap.set("n", "[g", vim.diagnostic.goto_prev, { buffer = 0 })
-					vim.keymap.set("n", "]g", vim.diagnostic.goto_next, { buffer = 0 })
-
-					local filetype = vim.bo[bufnr].filetype
-					if disable_semantic_tokens[filetype] then
-						client.server_capabilities.semanticTokensProvider = nil
-					end
-
-					-- Override server capabilities
-					if settings.server_capabilities then
-						for k, v in pairs(settings.server_capabilities) do
-							if v == vim.NIL then
-								---@diagnostic disable-next-line: cast-local-type
-								v = nil
-							end
-
-							client.server_capabilities[k] = v
-						end
-					end
-				end,
-			})
+			require("mason-tool-installer").setup({ ensure_installed = { "stylua" } })
 
 			require("plugins.custom.autoformat").setup()
 

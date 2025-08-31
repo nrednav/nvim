@@ -1,37 +1,30 @@
 local M = {}
 
 M.setup = function()
-	local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
-
-	require("nvim-treesitter").setup({
-		ensure_install = { "core", "stable" },
-	})
-
-	local syntax_on = {
-		json = true,
-		cpp = true,
-		elixir = true,
-		markdown = true,
-		javascript = true,
-		typescript = true,
+	local parsers_to_install = {
+		"json",
+		"cpp",
+		"elixir",
+		"markdown",
+		"javascript",
+		"typescript",
+		"go",
+		"lua",
+		"vim",
+		"vimdoc",
+		"heex",
 	}
+
+	require("nvim-treesitter").install(parsers_to_install):wait()
+
+	local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
 
 	vim.api.nvim_create_autocmd("FileType", {
 		group = group,
 		callback = function(args)
-			local buffer_number = args.buf
-			local ok, parser = pcall(vim.treesitter.get_parser, buffer_number)
-
-			if not ok or not parser then
-				return
-			end
-
-			pcall(vim.treesitter.start)
-
-			local filetype = vim.bo[buffer_number].filetype
-
-			if syntax_on[filetype] then
-				vim.bo[buffer_number].syntax = "on"
+			local ok, parser = pcall(vim.treesitter.get_parser, args.buf)
+			if ok and parser then
+				vim.treesitter.start(args.buf)
 			end
 		end,
 	})
