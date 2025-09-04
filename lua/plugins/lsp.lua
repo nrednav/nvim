@@ -2,22 +2,19 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			{ "folke/lazydev.nvim", ft = "lua" },
+			-- Core Dependencies
 			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
+
+			-- UI/UX Enhancements
 			{ "j-hui/fidget.nvim", opts = {} },
 			{ "https://git.sr.ht/~whynothugo/lsp_lines.nvim" },
+
+			-- Other Tools
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			"stevearc/conform.nvim",
 			"b0o/SchemaStore.nvim",
 		},
 		config = function()
-			local capabilities = nil
-
-			if pcall(require, "cmp_nvim_lsp") then
-				capabilities = require("cmp_nvim_lsp").default_capabilities()
-			end
-
 			local on_attach = function(client, bufnr)
 				local builtin = require("telescope.builtin")
 				local opts = { buffer = bufnr, noremap = true, silent = true }
@@ -36,64 +33,22 @@ return {
 				vim.keymap.set("n", "]g", vim.diagnostic.goto_next, opts)
 			end
 
+			local capabilities = nil
+			if pcall(require, "cmp_nvim_lsp") then
+				capabilities = require("cmp_nvim_lsp").default_capabilities()
+			end
+
 			require("mason").setup()
 
-			local ensure_installed = {
-				"bashls",
-				"biome",
-				"clangd",
-				"jsonls",
-				"lua_ls",
-				"ts_ls",
-				"yamlls",
-			}
-
-			require("mason-lspconfig").setup({
-				ensure_installed = ensure_installed,
-			})
-
 			local servers = {
+				bashls = {},
+				clangd = {},
 				lua_ls = {
 					settings = {
 						Lua = {
-							runtime = {
-								version = "LuaJIT",
-							},
-							diagnostics = {
-								globals = { "vim" },
-							},
-							telemetry = {
-								enable = false,
-							},
-						},
-					},
-					capabilities = {
-						textDocument = {
-							semanticTokens = false,
-						},
-					},
-				},
-				ts_ls = {
-					root_dir = require("lspconfig").util.root_pattern("package.json"),
-					single_file = false,
-					capabilities = {
-						textDocument = {
-							formatting = false,
-							rangeFormatting = false,
-						},
-					},
-				},
-				jsonls = {
-					settings = {
-						json = {
-							schemas = require("schemastore").json.schemas(),
-							validate = { enable = true },
-						},
-					},
-					capabilities = {
-						textDocument = {
-							formatting = false,
-							rangeFormatting = false,
+							runtime = { version = "LuaJIT" },
+							diagnostics = { globals = { "vim" } },
+							telemetry = { enable = false },
 						},
 					},
 				},
@@ -104,34 +59,47 @@ return {
 								enable = false,
 								url = "",
 							},
+							schemas = require("schemastore").yaml.schemas(),
 						},
 					},
 				},
-				clangd = {
-					init_options = { clangdFileStatus = true },
-					filetypes = { "c", "cpp" },
+				jsonls = {
+					settings = {
+						json = {
+							schemas = require("schemastore").json.schemas(),
+							validate = { enable = true },
+						},
+					},
+				},
+				ts_ls = {
+					root_dir = require("lspconfig").util.root_pattern("package.json"),
+				},
+				biome = {
+					root_dir = require("lspconfig").util.root_pattern("biome.json", "package.json"),
 				},
 			}
 
-			for _, server_name in ipairs(ensure_installed) do
-				local server_config = servers[server_name] or {}
-
-				vim.lsp.config[server_name] = vim.tbl_deep_extend("force", {
-					capabilities = capabilities,
+			for server_name, server_config in pairs(servers) do
+				local final_config = vim.tbl_deep_extend("force", {
 					on_attach = on_attach,
+					capabilities = capabilities,
 				}, server_config)
+
+				require("lspconfig")[server_name].setup(final_config)
 			end
 
-			require("mason-tool-installer").setup({ ensure_installed = { "stylua" } })
+			require("mason-tool-installer").setup({
+				ensure_installed = { "stylua" },
+			})
 
 			require("plugins.custom.autoformat").setup()
-
 			require("lsp_lines").setup()
 
 			vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 
 			vim.keymap.set("", "<leader>dl", function()
 				local config = vim.diagnostic.config() or {}
+
 				if config.virtual_text then
 					vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
 				else

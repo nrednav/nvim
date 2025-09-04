@@ -13,6 +13,7 @@ M.setup = function()
 		"vim",
 		"vimdoc",
 		"heex",
+		"terraform",
 	}
 
 	local parsers_set = {}
