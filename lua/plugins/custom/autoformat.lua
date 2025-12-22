@@ -4,6 +4,8 @@ local setup = function()
 	conform.setup({
 		formatters_by_ft = {
 			lua = { "stylua" },
+			cpp = { "clang-format" },
+			c = { "clang-format" },
 		},
 		format_on_save = function(bufnr)
 			if vim.g.conform_disable_autoformat or vim.b[bufnr].conform_disable_autoformat then

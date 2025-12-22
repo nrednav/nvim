@@ -42,7 +42,25 @@ return {
 
 			local servers = {
 				bashls = {},
-				clangd = {},
+				clangd = {
+					cmd = {
+						"clangd",
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
+						"--function-arg-placeholders",
+						"--fallback-style=llvm",
+					},
+					init_options = {
+						usePlaceholders = true,
+						completeUnimported = true,
+						clangdFileStatus = true,
+					},
+					capabilities = {
+						offsetEncoding = { "utf-16" },
+					},
+				},
 				lua_ls = {
 					settings = {
 						Lua = {
@@ -89,7 +107,12 @@ return {
 			end
 
 			require("mason-tool-installer").setup({
-				ensure_installed = { "stylua" },
+				ensure_installed = {
+					"stylua",
+					"clangd",
+					"clang-format",
+					"codelldb",
+				},
 			})
 
 			require("plugins.custom.autoformat").setup()
@@ -106,6 +129,14 @@ return {
 					vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
 				end
 			end, { desc = "Toggle lsp_lines" })
+
+			-- vim.lsp.config("expert", {
+			-- 	cmd = { "expert" },
+			-- 	root_markers = { "mix.exs", ".git" },
+			-- 	filetypes = { "elixir", "eelixir", "heex" },
+			-- })
+			--
+			-- vim.lsp.enable("expert")
 		end,
 	},
 }
