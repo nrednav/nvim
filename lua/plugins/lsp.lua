@@ -3,7 +3,8 @@ return {
 		"neovim/nvim-lspconfig",
 		dependencies = {
 			-- Core Dependencies
-			"williamboman/mason.nvim",
+			"mason-org/mason.nvim",
+			"mason-org/mason-lspconfig.nvim",
 
 			-- UI/UX Enhancements
 			{ "j-hui/fidget.nvim", opts = {} },
@@ -94,14 +95,20 @@ return {
 				},
 			}
 
-			for server_name, server_config in pairs(servers) do
-				local final_config = vim.tbl_deep_extend("force", {
-					on_attach = on_attach,
-					capabilities = capabilities,
-				}, server_config)
+			require("mason-lspconfig").setup({
+				ensure_installed = vim.tbl_keys(servers),
+				handlers = {
+					function(server_name)
+						local server_config = servers[server_name] or {}
+						-- Merge on_attach and capabilities into every server config
+						server_config.on_attach = on_attach
+						server_config.capabilities = capabilities
 
-				require("lspconfig")[server_name].setup(final_config)
-			end
+						-- Pass to lspconfig
+						require("lspconfig")[server_name].setup(server_config)
+					end,
+				},
+			})
 
 			require("mason-tool-installer").setup({
 				ensure_installed = {
