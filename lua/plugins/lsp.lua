@@ -33,10 +33,7 @@ return {
 				vim.keymap.set("n", "]g", vim.diagnostic.goto_next, opts)
 			end
 
-			local capabilities = nil
-			if pcall(require, "cmp_nvim_lsp") then
-				capabilities = require("cmp_nvim_lsp").default_capabilities()
-			end
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 			require("mason").setup()
 
@@ -65,7 +62,7 @@ return {
 					settings = {
 						Lua = {
 							runtime = { version = "LuaJIT" },
-							diagnostics = { globals = { "vim" } },
+							workspace = { checkThirdParty = false },
 							telemetry = { enable = false },
 						},
 					},
@@ -131,9 +128,17 @@ return {
 			end, { desc = "Toggle lsp_lines" })
 
 			-- vim.lsp.config("expert", {
-			-- 	cmd = { "expert" },
+			-- 	cmd = {
+			-- 		"/Users/vandern/dev/sources/expert/apps/expert/_build/prod/rel/plain/bin/start_expert",
+			-- 		"--stdio",
+			-- 	},
 			-- 	root_markers = { "mix.exs", ".git" },
 			-- 	filetypes = { "elixir", "eelixir", "heex" },
+			-- 	capabilities = capabilities,
+			-- 	on_attach = function(client, bufnr)
+			-- 		client.server_capabilities.documentFormattingProvider = false
+			-- 		on_attach(client, bufnr)
+			-- 	end,
 			-- })
 			--
 			-- vim.lsp.enable("expert")
