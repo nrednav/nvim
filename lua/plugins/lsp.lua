@@ -87,12 +87,6 @@ return {
 						},
 					},
 				},
-				ts_ls = {
-					root_dir = require("lspconfig").util.root_pattern("package.json"),
-				},
-				biome = {
-					root_dir = require("lspconfig").util.root_pattern("biome.json", "package.json"),
-				},
 			}
 
 			require("mason-lspconfig").setup({
