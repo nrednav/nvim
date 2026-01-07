@@ -106,7 +106,6 @@ return {
 
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-					"stylua",
 					"clangd",
 					"clang-format",
 					"codelldb",

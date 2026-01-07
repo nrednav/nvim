@@ -30,6 +30,53 @@ map("n", "<leader>cd", ":cd %:p:h<CR>:pwd<CR>", { noremap = true })
 map("n", "<leader>x", "<cmd>.lua<CR>", { desc = "Execute the current line" })
 map("n", "<leader><leader>x", "<cmd>source %<CR>", { desc = "Execute the current file" })
 
+-- Quickfix list navigation (Next/Prev Item)
+map("n", "]q", "<cmd>cnext<CR>zz", { desc = "Forward qfix list" })
+map("n", "[q", "<cmd>cprev<CR>zz", { desc = "Backward qfix list" })
+
+-- Location list navigation (Next/Prev Item)
+-- Note: Location lists are like Quickfix lists but local to the window
+map("n", "]l", "<cmd>lnext<CR>zz", { desc = "Forward location list" })
+map("n", "[l", "<cmd>lprev<CR>zz", { desc = "Backward location list" })
+
+-- Quickfix History Navigation (Newer/Older List)
+-- Essential when you accidentally throw away a list with a new Telescope search
+map("n", "<leader>qn", "<cmd>cnewer<CR>", { desc = "Go to newer quickfix list" })
+map("n", "<leader>qo", "<cmd>colder<CR>", { desc = "Go to older quickfix list" })
+
+-- Clear Quickfix History
+-- This destroys the entire stack of lists and closes the window.
+map("n", "<leader>qx", function()
+	-- 'f' flag tells setqflist to replace the entire stack with a new empty one
+	vim.fn.setqflist({}, "f")
+	vim.cmd("cclose")
+	vim.notify("Quickfix history cleared", vim.log.levels.INFO)
+end, { desc = "Clear Quickfix History" })
+
+-- Empty ONLY the current list (History remains)
+map("n", "<leader>qe", function()
+	vim.fn.setqflist({}, "r")
+	vim.notify("Current Quickfix list emptied", vim.log.levels.INFO)
+end, { desc = "Empty current Quickfix list" })
+
+-- Toggle Quickfix window
+-- This checks if the quickfix window is open; if yes close it, else open it.
+map("n", "<leader>q", function()
+	local qf_exists = false
+	for _, win in pairs(vim.fn.getwininfo()) do
+		if win["quickfix"] == 1 then
+			qf_exists = true
+		end
+	end
+	if qf_exists == true then
+		vim.cmd("cclose")
+		return
+	end
+	if not vim.tbl_isempty(vim.fn.getqflist()) then
+		vim.cmd("copen")
+	end
+end, { desc = "Toggle Quickfix" })
+
 -- Insert DateTime header
 local function get_day_with_ordinal(day)
 	if day > 3 and day < 21 then
