@@ -6,6 +6,7 @@ o.hidden = true
 o.secure = true
 o.belloff = "all"
 o.showcmd = true
+o.switchbuf = "usetab,newtab"
 
 -- Search
 o.hlsearch = false
