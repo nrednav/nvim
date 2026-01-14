@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-01-14
+
+### Added
+
+- Created `after/ftplugin/cpp.lua` to append include paths to
+  `vim.opt_local.path`.
+- Added `lua/plugins/conform.lua` to configure `conform.nvim` with
+  `clang-format` and `stylua`.
+- Added user commands `ConformDisable` and `ConformEnable` to control
+  auto-formatting.
+- Added `stylua` to the list of configured formatters.
+- Added global file ignore patterns to Telescope configuration for build
+  artifacts and system files.
+- Added exclusion patterns for `vcpkg` and `build` directories in the custom
+  multi-ripgrep picker.
+
+### Changed
+
+- Refactored `lua/plugins/lsp.lua` to use the `LspAttach` autocommand for
+  keybindings instead of the `on_attach` callback.
+- Migrated LSP server setup to use `vim.lsp.config` and `vim.lsp.enable` within
+  Mason handlers.
+- Moved `clangd` configuration to a manual setup block to ensure specific flags
+  are applied.
+- Updated `lua_ls` settings to recognize the `vim` global.
+- Disabled the document formatting provider for `yamlls`.
+
+### Removed
+
+- Deleted `lua/plugins/custom/autoformat.lua`.
+- Removed `ConformDisableAutoFormat` and `ConformEnableAutoFormat` commands.
+- Removed `conform.nvim` dependency and setup call from `lua/plugins/lsp.lua`.
+
 ## [1.2.0] - 2026-01-09
 
 ### Added

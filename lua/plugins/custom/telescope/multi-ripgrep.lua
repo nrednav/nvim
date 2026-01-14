@@ -57,7 +57,9 @@ return function(opts)
           "--column",
           "--smart-case",
           "--hidden",
-          "--glob=!.git"
+          "--glob=!.git",
+          "--glob=!vcpkg/*",
+          "--glob=!build/*",
         },
       })
     end,
