@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-01-25
+
+### Added
+
+- `lua/plugins/luasnip.lua` to configure `L3MON4D3/LuaSnip` with keybindings for
+  jump (`<C-j/k>`) and choice cycling (`<C-l>`).
+- `lua/snippets/elixir.lua` providing custom snippets for modules, functions,
+  and GenServer components.
+
+### Changed
+
+- Configured `blink.cmp` to use the `luasnip` preset and removed explicit
+  provider definitions in `lua/plugins/blink.lua`.
+- Moved `friendly-snippets` dependency from `blink.cmp` to `LuaSnip`
+  configuration.
+
 ## [1.4.0] - 2026-01-24
 
 ### Added
