@@ -9,39 +9,41 @@ return {
     "kkharji/sqlite.lua",
   },
   init = function()
-    local builtin = require("telescope.builtin")
-
-    local function apply_theme(command, opts)
-      local themes = require("telescope.themes")
+    local function ivy(builtin_name, opts)
       return function()
-        command(themes.get_ivy(opts))
+        local builtin = require("telescope.builtin")
+        local themes = require("telescope.themes")
+        builtin[builtin_name](themes.get_ivy(opts or {}))
       end
     end
 
-    vim.keymap.set("n", "<leader>ff", apply_theme(builtin.find_files))
-    vim.keymap.set("n", "<leader>fh", apply_theme(builtin.help_tags))
+    vim.keymap.set("n", "<leader>ff", ivy("find_files"))
+    vim.keymap.set("n", "<leader>fh", ivy("help_tags"))
     vim.keymap.set(
       "n",
       "<leader>fn",
-      apply_theme(builtin.find_files, {
+      ivy("find_files", {
         cwd = "~/docs/blue",
         prompt_title = "<- NOTES ->",
       })
     )
-    vim.keymap.set("n", "<leader>lg", apply_theme(require("plugins.custom.telescope.multi-ripgrep")))
-    vim.keymap.set("n", "<leader>fb", apply_theme(builtin.current_buffer_fuzzy_find))
+    vim.keymap.set("n", "<leader>lg", function()
+      local themes = require("telescope.themes")
+      require("plugins.custom.telescope.multi-ripgrep")(themes.get_ivy({}))
+    end)
+    vim.keymap.set("n", "<leader>fb", ivy("current_buffer_fuzzy_find"))
     vim.keymap.set(
       "n",
       "<leader>fp",
-      apply_theme(builtin.find_files, {
+      ivy("find_files", {
         cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy"),
       })
     )
-    vim.keymap.set("n", "<leader>fg", apply_theme(builtin.git_files))
+    vim.keymap.set("n", "<leader>fg", ivy("git_files"))
     vim.keymap.set(
       "n",
       "<leader>vc",
-      apply_theme(builtin.find_files, {
+      ivy("find_files", {
         path_display = { "shorten" },
         cwd = "~/.config/nvim",
         prompt_title = "<- NVIMRC ->",

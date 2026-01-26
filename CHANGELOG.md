@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-01-26
+
+### Added
+
+- `Makefile` and `scripts/benchmark.sh` to automate environment setup and
+  enforce performance thresholds.
+- Git pre-commit hook to block commits if Neovim startup time exceeds 60ms.
+
+### Changed
+
+- Refactored `get_python_path` in `lua/core/globals.lua` to replace synchronous
+  I/O (`io.open`) with non-blocking `vim.env` and `vim.uv` checks.
+- Configured aggressive lazy-loading for `blink.cmp`, `nvim-dap`,
+  `nvim-treesitter`, `nvim-lspconfig`, `tsc.nvim`, and `typescript-tools.nvim`
+  using `event`, `keys`, `cmd`, and `ft` triggers.
+
+### Removed
+
+- `harpoon` and `telescope-undo.nvim` plugins.
+
 ## [1.6.0] - 2026-01-26
 
 ### Added

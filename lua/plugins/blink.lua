@@ -2,7 +2,7 @@ return {
   "saghen/blink.cmp",
   dependencies = { "L3MON4D3/LuaSnip" },
   version = "*",
-  lazy = false,
+  event = "InsertEnter",
   opts = {
     keymap = { preset = "default" },
     appearance = {
