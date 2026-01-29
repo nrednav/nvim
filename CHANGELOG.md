@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.8.0] - 2026-01-29
+
+### Added
+
+- **Project Management Module**: Created `lua/plugins/custom/pm.lua` to
+  implement a local, file-based project workflow rooted in `~/docs/projects`.
+- **Telescope Integrations**:
+    - `find_active_tasks`: Greps for `#now` tags excluding the `_archive`
+      directory.
+    - `find_project_manifests`: Filters file search to `**/manifest.md`.
+    - `browse_all_files`: Scopes file search to the project directory.
+- **WIP Logic**: Added `check_wip` function to count `#now` occurrences via `rg`
+  and `awk`, enforcing a hard limit of 3 active tasks.
+- **Keymaps**: Registered entries in `lua/core/mappings.lua`:
+    - `<leader>pa`: Search active tasks.
+    - `<leader>pm`: Search project manifests.
+    - `<leader>pf`: Browse all project files.
+    - `<leader>pw`: Trigger WIP limit check.
+
 ## [v1.7.1] - 2026-01-27
 
 ### Fixed

@@ -129,3 +129,11 @@ vim.api.nvim_set_keymap(
     desc = "Copy file path"
   }
 )
+
+-- Project Management
+local pm = require("plugins.custom.pm")
+
+vim.keymap.set("n", "<leader>pa", pm.find_active_tasks, { desc = "Project: Active (#now)" })
+vim.keymap.set("n", "<leader>pm", pm.find_project_manifests, { desc = "Project: Manifests" })
+vim.keymap.set("n", "<leader>pf", pm.browse_all_files, { desc = "Project: All Files" })
+vim.keymap.set("n", "<leader>pw", pm.check_wip, { desc = "Project: Check WIP" })
