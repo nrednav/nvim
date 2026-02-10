@@ -45,8 +45,8 @@ return {
       "<leader>vc",
       ivy("find_files", {
         path_display = { "shorten" },
-        cwd = "~/.config/nvim",
-        prompt_title = "<- NVIMRC ->",
+        cwd = vim.fn.expand("~/.config/nvim"),
+        prompt_title = "nvim config",
       })
     )
   end,

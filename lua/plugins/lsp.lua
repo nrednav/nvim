@@ -64,17 +64,6 @@ return {
             },
           },
         },
-        yamlls = {
-          settings = {
-            on_attach = function(client)
-              client.server_capabilities.documentFormattingProvider = false
-            end,
-            yaml = {
-              schemaStore = { enable = false, url = "" },
-              schemas = require("schemastore").yaml.schemas(),
-            },
-          },
-        },
         jsonls = {
           settings = {
             json = {
