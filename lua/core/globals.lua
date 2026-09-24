@@ -26,3 +26,17 @@ vim.g.mapleader = ","
 
 -- Set python path dynamically
 vim.g.python3_host_prog = get_python_path()
+
+-- Make asdf-managed toolchains (e.g. Go) visible to Neovim, no matter how
+-- Neovim was launched (terminal, GUI, or a bare shell).
+-- This runs before any plugin loads, so Mason can find `go` when it installs
+-- gopls, and gopls can find its GOROOT when it runs.
+do
+  local asdf_dir = vim.env.ASDF_DATA_DIR or (vim.env.HOME .. "/.asdf")
+  local shims = asdf_dir .. "/shims"
+  local bin = asdf_dir .. "/bin"
+  local path = vim.env.PATH or ""
+  if vim.uv.fs_stat(shims) and not path:find(shims, 1, true) then
+    vim.env.PATH = shims .. ":" .. bin .. ":" .. path
+  end
+end
